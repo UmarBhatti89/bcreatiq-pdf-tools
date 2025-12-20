@@ -39,57 +39,61 @@ st.set_page_config(
 def local_css():
     st.markdown("""
     <style>
-        /* --- 1. FORCE LIGHT THEME TEXT (Fix for Dark Mode Users) --- */
-        html, body, [class*="css"] {
+        /* --- 1. GLOBAL TEXT COLOR FIX (CRITICAL) --- */
+        /* Pehle yahan #f7f8fa (White) tha, ab #262730 (Dark) hai */
+        html, body, [class*="css"], .stMarkdown, p, label {
             font-family: 'Segoe UI', sans-serif;
-            color: #f7f8fa !important; /* Force Dark Grey/Black Text */
+            color: #262730 !important; 
         }
         
-        /* Specific Fix for Sidebar Text */
-        [data-testid="stSidebar"] *, [data-testid="stSidebar"] label, [data-testid="stSidebar"] p {
-            color: #262730 !important;
-        }
-        
-        /* Fix for Inputs and Selectbox Text */
-        .stTextInput input, .stSelectbox div, .stNumberInput input {
-            color: #f7f8fa !important;
+        /* --- 2. RADIO BUTTONS & CHECKBOX LABELS --- */
+        /* Ye wo points wala text hai jo nazar nahi aa raha tha */
+        div[role="radiogroup"] label p, 
+        div[data-testid="stRadio"] label p {
+            color: #262730 !important; 
+            background-color: transparent !important;
         }
 
-        /* --- 2. BACKGROUND COLORS --- */
-        .stApp {
-            background-color: #f8f9fa;
+        /* --- 3. INPUT FIELDS (Type karne wali jagah) --- */
+        /* Input box ko White aur Text ko Black zabardasti karein */
+        .stTextInput input, .stNumberInput input, .stSelectbox div, .stTextArea textarea {
+            color: #262730 !important;
+            background-color: #ffffff !important;
         }
-        
+
+        /* --- 4. SIDEBAR --- */
         [data-testid="stSidebar"] {
             background-color: #ffffff;
             border-right: 1px solid #e0e0e0;
         }
+        [data-testid="stSidebar"] *, [data-testid="stSidebar"] label, [data-testid="stSidebar"] p {
+            color: #262730 !important;
+        }
 
-        /* --- 3. MOBILE PADDING FIX --- */
+        /* --- 5. MAIN BACKGROUND --- */
+        .stApp {
+            background-color: #f8f9fa;
+        }
+
+        /* --- 6. MOBILE PADDING --- */
         .block-container {
             padding-top: 2rem !important;
             padding-bottom: 5rem !important;
         }
 
-        /* --- 4. BUTTON STYLING (Gradient) --- */
+        /* --- 7. BUTTONS --- */
         .stButton>button {
             background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
-            color: white !important; /* Button text must remain white */
+            color: white !important;
             border: none;
             padding: 12px 24px;
             width: 100%;
             border-radius: 8px;
             font-weight: bold;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: 0.3s;
-        }
-        .stButton>button:hover {
-            background: linear-gradient(90deg, #d53369 0%, #daae51 100%);
-            transform: scale(1.02);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
         
-        /* Headers */
+        /* HEADERS */
         h1, h2, h3 {
             color: #2c3e50 !important;
         }
@@ -356,6 +360,7 @@ elif "Content Editor" in tool:
         except Exception as e:
 
             st.error(f"Error: {e}")
+
 
 
 
