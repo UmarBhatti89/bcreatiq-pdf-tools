@@ -32,6 +32,8 @@ st.set_page_config(
 )
 
 # --- CUSTOM CSS (THEME) ---
+# app.py mein local_css function ko is se replace karein:
+
 def local_css():
     st.markdown("""
     <style>
@@ -40,52 +42,39 @@ def local_css():
             background-color: #f8f9fa;
         }
         
+        /* MOBILE OPTIMIZATION: Reduce top padding */
+        .block-container {
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
+        }
+
         /* SIDEBAR STYLE */
         [data-testid="stSidebar"] {
             background-color: #ffffff;
             border-right: 1px solid #e0e0e0;
         }
 
-        /* CUSTOM BUTTONS (Turquoise + Pink Gradient) */
+        /* CUSTOM BUTTONS (Gradient) */
         .stButton>button {
             background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
             color: white;
             border: none;
             padding: 10px 24px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
+            width: 100%;  /* Full width on mobile */
             border-radius: 8px;
             font-weight: bold;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: 0.3s;
-            width: 100%;
         }
         .stButton>button:hover {
-            background: linear-gradient(90deg, #d53369 0%, #daae51 100%); /* Pink hover effect */
+            background: linear-gradient(90deg, #d53369 0%, #daae51 100%);
             transform: scale(1.02);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
 
-        /* HEADERS */
-        h1, h2, h3 {
-            color: #2c3e50;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        /* DIVIDER STYLE */
-        hr {
-            border-top: 2px solid #00d2ff;
-            margin-bottom: 25px;
-        }
-
-        /* CARDS / CONTAINERS */
+        /* CARD STYLE */
         .css-1r6slb0 {
             background-color: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
@@ -350,4 +339,5 @@ elif "Content Editor" in tool:
             else:
                 st.warning("No matching text found.")
         except Exception as e:
+
             st.error(f"Error: {e}")
