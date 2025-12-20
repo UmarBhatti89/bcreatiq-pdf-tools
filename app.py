@@ -52,7 +52,7 @@ def local_css():
         
         /* Fix for Inputs and Selectbox Text */
         .stTextInput input, .stSelectbox div, .stNumberInput input {
-            color: #262730 !important;
+            color: #f7f8fa !important;
         }
 
         /* --- 2. BACKGROUND COLORS --- */
@@ -356,6 +356,7 @@ elif "Content Editor" in tool:
         except Exception as e:
 
             st.error(f"Error: {e}")
+
 
 
 
