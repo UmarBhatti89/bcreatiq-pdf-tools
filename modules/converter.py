@@ -1,93 +1,90 @@
 # modules/converter.py
 import fitz  # PyMuPDF
-from PIL import Image
 import io
-import zipfile
+from PIL import Image
 import os
-from docx2pdf import convert
 from pdf2docx import Converter
 
-# --- 1. PDF TO IMAGES ---
-def pdf_to_images_logic(uploaded_file, img_format="png", dpi=200):
-    doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
-    zip_buffer = io.BytesIO()
-    
-    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
-        for i, page in enumerate(doc):
-            pix = page.get_pixmap(dpi=dpi)
-            if img_format.lower() in ["jpg", "jpeg"]:
-                img_data = pix.tobytes("jpg")
-                ext = "jpg"
-            else:
-                img_data = pix.tobytes("png")
-                ext = "png"
-            zf.writestr(f"page_{i+1}.{ext}", img_data)
+# NOTE: Humne 'docx2pdf' hata diya hai kyunki wo Cloud par crash karta hai.
 
-    zip_buffer.seek(0)
-    return zip_buffer
-
-# --- 2. IMAGES TO PDF ---
-def images_to_pdf_logic(uploaded_images):
-    if not uploaded_images: return None
-    pil_images = []
-    for img_file in uploaded_images:
-        img = Image.open(img_file)
-        if img.mode == 'RGBA':
-            bg = Image.new('RGB', img.size, (255, 255, 255))
-            bg.paste(img, mask=img.split()[3])
-            img = bg
-        else:
-            img = img.convert("RGB")
-        pil_images.append(img)
-
-    output = io.BytesIO()
-    if pil_images:
-        pil_images[0].save(output, "PDF", save_all=True, append_images=pil_images[1:])
-    output.seek(0)
-    return output
-
-# --- 3. WORD TO PDF (Requires MS Word Installed) ---
-def word_to_pdf_logic(uploaded_file):
-    # Temp file banani padegi kyunki library path mangti hai
-    temp_docx = "temp_input.docx"
-    temp_pdf = "temp_output.pdf"
-    
-    with open(temp_docx, "wb") as f:
-        f.write(uploaded_file.getbuffer())
-        
+# ======================================================
+# 1. PDF TO IMAGES
+# ======================================================
+def pdf_to_images_logic(uploaded_file, ext="png"):
     try:
-        # Conversion
-        convert(temp_docx, temp_pdf)
+        uploaded_file.seek(0)
+        doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
         
-        # Read Result
-        with open(temp_pdf, "rb") as f:
-            pdf_data = f.read()
+        # Zip file memory me banayenge
+        import zipfile
+        zip_buffer = io.BytesIO()
+        
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+            for i, page in enumerate(doc):
+                pix = page.get_pixmap(dpi=200)
+                img_data = pix.tobytes(ext)
+                zf.writestr(f"page_{i+1}.{ext}", img_data)
+                
+        zip_buffer.seek(0)
+        return zip_buffer
+    except Exception as e:
+        raise RuntimeError(f"Error converting to images: {e}")
+
+# ======================================================
+# 2. IMAGES TO PDF
+# ======================================================
+def images_to_pdf_logic(image_files):
+    try:
+        if not image_files:
+            return None
             
-        return io.BytesIO(pdf_data)
+        # Pehli image ko base banayen
+        first_image = Image.open(image_files[0])
+        first_image = first_image.convert("RGB")
         
-    finally:
-        # Cleanup (Files delete karein)
-        if os.path.exists(temp_docx): os.remove(temp_docx)
-        if os.path.exists(temp_pdf): os.remove(temp_pdf)
+        other_images = []
+        for f in image_files[1:]:
+            img = Image.open(f)
+            img = img.convert("RGB")
+            other_images.append(img)
+            
+        output_buffer = io.BytesIO()
+        first_image.save(output_buffer, save_all=True, append_images=other_images, format="PDF")
+        output_buffer.seek(0)
+        return output_buffer
+    except Exception as e:
+        raise RuntimeError(f"Error creating PDF: {e}")
 
-# --- 4. PDF TO WORD ---
+# ======================================================
+# 3. PDF TO WORD (Digital Only)
+# ======================================================
 def pdf_to_word_logic(uploaded_file):
-    temp_pdf = "temp_input.pdf"
-    temp_docx = "temp_output.docx"
+    docx_path = "converted_digital.docx"
+    temp_pdf_path = "temp_input.pdf"
     
-    with open(temp_pdf, "wb") as f:
-        f.write(uploaded_file.getbuffer())
-        
     try:
-        cv = Converter(temp_pdf)
-        cv.convert(temp_docx)
+        uploaded_file.seek(0)
+        with open(temp_pdf_path, "wb") as f:
+            f.write(uploaded_file.read())
+            
+        cv = Converter(temp_pdf_path)
+        cv.convert(docx_path)
         cv.close()
         
-        with open(temp_docx, "rb") as f:
-            docx_data = f.read()
+        with open(docx_path, "rb") as f:
+            data = io.BytesIO(f.read())
             
-        return io.BytesIO(docx_data)
-        
+        return data
+    except Exception as e:
+        raise RuntimeError(f"Conversion Error: {e}")
     finally:
-        if os.path.exists(temp_pdf): os.remove(temp_pdf)
-        if os.path.exists(temp_docx): os.remove(temp_docx)
+        if os.path.exists(docx_path): os.remove(docx_path)
+        if os.path.exists(temp_pdf_path): os.remove(temp_pdf_path)
+
+# ======================================================
+# 4. WORD TO PDF (DISABLED FOR CLOUD)
+# ======================================================
+def word_to_pdf_logic(docx_file):
+    # Ye function Cloud par nahi chal sakta bina MS Word ke.
+    # Hum bas ek error raise karenge taake user ko pata chal jaye.
+    raise NotImplementedError("⚠️ Word to PDF conversion requires Windows Server. This feature is disabled on Free Cloud Hosting.")
