@@ -42,7 +42,7 @@ def local_css():
         /* --- 1. FORCE LIGHT THEME TEXT (Fix for Dark Mode Users) --- */
         html, body, [class*="css"] {
             font-family: 'Segoe UI', sans-serif;
-            color: #262730 !important; /* Force Dark Grey/Black Text */
+            color: #f7f8fa !important; /* Force Dark Grey/Black Text */
         }
         
         /* Specific Fix for Sidebar Text */
@@ -356,6 +356,7 @@ elif "Content Editor" in tool:
         except Exception as e:
 
             st.error(f"Error: {e}")
+
 
 
 
