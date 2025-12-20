@@ -47,7 +47,7 @@ def local_css():
         
         /* Specific Fix for Sidebar Text */
         [data-testid="stSidebar"] *, [data-testid="stSidebar"] label, [data-testid="stSidebar"] p {
-            color: #f7f8fa !important;
+            color: #262730 !important;
         }
         
         /* Fix for Inputs and Selectbox Text */
@@ -356,5 +356,6 @@ elif "Content Editor" in tool:
         except Exception as e:
 
             st.error(f"Error: {e}")
+
 
 
