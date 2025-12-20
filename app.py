@@ -34,33 +34,50 @@ st.set_page_config(
 # --- CUSTOM CSS (THEME) ---
 # app.py mein local_css function ko is se replace karein:
 
+# app.py mein local_css function ko is pure code se replace karein:
+
 def local_css():
     st.markdown("""
     <style>
-        /* MAIN BACKGROUND & FONT */
+        /* --- 1. FORCE LIGHT THEME TEXT (Fix for Dark Mode Users) --- */
+        html, body, [class*="css"] {
+            font-family: 'Segoe UI', sans-serif;
+            color: #262730 !important; /* Force Dark Grey/Black Text */
+        }
+        
+        /* Specific Fix for Sidebar Text */
+        [data-testid="stSidebar"] *, [data-testid="stSidebar"] label, [data-testid="stSidebar"] p {
+            color: #262730 !important;
+        }
+        
+        /* Fix for Inputs and Selectbox Text */
+        .stTextInput input, .stSelectbox div, .stNumberInput input {
+            color: #262730 !important;
+        }
+
+        /* --- 2. BACKGROUND COLORS --- */
         .stApp {
             background-color: #f8f9fa;
         }
         
-        /* MOBILE OPTIMIZATION: Reduce top padding */
-        .block-container {
-            padding-top: 1rem !important;
-            padding-bottom: 1rem !important;
-        }
-
-        /* SIDEBAR STYLE */
         [data-testid="stSidebar"] {
             background-color: #ffffff;
             border-right: 1px solid #e0e0e0;
         }
 
-        /* CUSTOM BUTTONS (Gradient) */
+        /* --- 3. MOBILE PADDING FIX --- */
+        .block-container {
+            padding-top: 2rem !important;
+            padding-bottom: 5rem !important;
+        }
+
+        /* --- 4. BUTTON STYLING (Gradient) --- */
         .stButton>button {
             background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
-            color: white;
+            color: white !important; /* Button text must remain white */
             border: none;
-            padding: 10px 24px;
-            width: 100%;  /* Full width on mobile */
+            padding: 12px 24px;
+            width: 100%;
             border-radius: 8px;
             font-weight: bold;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -69,14 +86,12 @@ def local_css():
         .stButton>button:hover {
             background: linear-gradient(90deg, #d53369 0%, #daae51 100%);
             transform: scale(1.02);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
-
-        /* CARD STYLE */
-        .css-1r6slb0 {
-            background-color: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        
+        /* Headers */
+        h1, h2, h3 {
+            color: #2c3e50 !important;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -341,3 +356,4 @@ elif "Content Editor" in tool:
         except Exception as e:
 
             st.error(f"Error: {e}")
+
