@@ -2,10 +2,18 @@
 import fitz  # PyMuPDF
 import io
 from PIL import Image
+import sys
 import pytesseract
 
-# Tesseract Path (Windows users ke liye zaroori hai agar path env variable me nahi hai)
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+# Check karega ke operating system konsa hai
+if sys.platform.startswith('win'):
+    # Agar Windows hai (Aapka Local PC), toh yeh path use kare
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+else:
+    # Agar Linux hai (Streamlit Cloud), toh kuch declare karne ki zaroorat nahi
+    # Tesseract packages.txt ke zariye automatically pick ho jayega
+    pass
 
 def get_dominant_color(page, rect):
     """Background color detect karta hai taake patch match kare"""
